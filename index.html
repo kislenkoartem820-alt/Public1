@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ANORIX — CS2 Community Server</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0B0D0C;
+    --panel:#141715;
+    --panel-2:#181C19;
+    --border:#262B26;
+    --text:#E8E6DE;
+    --muted:#8B9088;
+    --t:#E07A3F;
+    --t-dim:#8a4a29;
+    --ct:#4E7BA3;
+    --ct-dim:#2c4257;
+    --danger:#B3432F;
+    --ok:#5C8A5C;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:
+      radial-gradient(ellipse 900px 500px at 15% -10%, rgba(224,122,63,0.08), transparent),
+      radial-gradient(ellipse 800px 500px at 100% 10%, rgba(78,123,163,0.06), transparent),
+      var(--bg);
+    color:var(--text);
+    font-family:'Inter', sans-serif;
+    line-height:1.55;
+    min-height:100vh;
+  }
+  .display{font-family:'Rajdhani', sans-serif; font-weight:700; letter-spacing:0.01em;}
+  .mono{font-family:'JetBrains Mono', monospace;}
+  a{color:inherit;}
+  img{max-width:100%;}
+  .wrap{max-width:1120px; margin:0 auto; padding:0 28px;}
+
+  /* NAV */
+  header{
+    position:sticky; top:0; z-index:50;
+    background:rgba(11,13,12,0.85); backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--border);
+  }
+  nav{display:flex; align-items:center; justify-content:space-between; padding:16px 0;}
+  .logo{display:flex; align-items:center; gap:10px; font-size:1.3rem;}
+  .logo .dot{width:9px; height:9px; background:var(--t); border-radius:50%; box-shadow:0 0 10px var(--t);}
+  .navlinks{display:flex; gap:30px; font-size:0.95rem; color:var(--muted);}
+  .navlinks a{transition:color .15s;}
+  .navlinks a:hover{color:var(--text);}
+  .btn{
+    display:inline-flex; align-items:center; gap:8px;
+    padding:10px 20px; border-radius:3px; font-weight:600; font-size:0.92rem;
+    border:1px solid transparent; cursor:pointer; transition:all .15s; font-family:'Inter',sans-serif;
+  }
+  .btn-t{background:var(--t); color:#1a0f08;}
+  .btn-t:hover{background:#ea8a4d;}
+  .btn-outline{border-color:var(--border); background:transparent; color:var(--text);}
+  .btn-outline:hover{border-color:var(--muted);}
+  .btn-ct{background:var(--ct); color:#0c1620;}
+  .btn-ct:hover{background:#5f8fba;}
+  .btn-danger{background:var(--danger); color:#1a0906;}
+  .btn-danger:hover{background:#c85138;}
+  .btn-sm{padding:7px 14px; font-size:0.82rem;}
+  .btn[disabled]{opacity:0.45; cursor:not-allowed;}
+
+  /* HERO */
+  .hero{padding:88px 0 64px; display:grid; grid-template-columns:1.15fr 0.85fr; gap:56px; align-items:center;}
+  .tag{
+    display:inline-flex; align-items:center; gap:8px; padding:5px 12px;
+    border:1px solid var(--t-dim); border-radius:3px; color:var(--t);
+    font-size:0.8rem; font-family:'JetBrains Mono',monospace; margin-bottom:22px;
+  }
+  .tag .pulse{width:6px; height:6px; border-radius:50%; background:var(--ok); box-shadow:0 0 6px var(--ok); animation:pulse 1.6s infinite;}
+  @keyframes pulse{0%,100%{opacity:1;} 50%{opacity:0.3;}}
+  h1{font-size:3.6rem; line-height:1.02; margin-bottom:20px;}
+  h1 .sub{display:block; color:var(--muted); font-size:1.6rem; font-weight:500; margin-top:8px;}
+  .hero p.lead{color:var(--muted); font-size:1.08rem; max-width:52ch; margin-bottom:30px;}
+  .hero-actions{display:flex; gap:12px; flex-wrap:wrap;}
+
+  .server-card{
+    background:var(--panel); border:1px solid var(--border); border-radius:4px; padding:26px;
+    position:relative; overflow:hidden;
+  }
+  .server-card::before{
+    content:""; position:absolute; top:0; left:0; width:3px; height:100%; background:linear-gradient(var(--t), var(--ct));
+  }
+  .server-card .row{display:flex; justify-content:space-between; align-items:baseline; padding:11px 0; border-bottom:1px solid var(--border);}
+  .server-card .row:last-child{border-bottom:none;}
+  .server-card .k{color:var(--muted); font-size:0.85rem;}
+  .server-card .v{font-family:'JetBrains Mono',monospace; font-size:0.95rem;}
+  .server-card .v.big{font-size:1.3rem; color:var(--t);}
+  .ip-box{
+    display:flex; margin-top:18px; border:1px solid var(--border); border-radius:3px; overflow:hidden;
+  }
+  .ip-box input{
+    flex:1; background:var(--panel-2); border:none; color:var(--text); padding:11px 14px;
+    font-family:'JetBrains Mono',monospace; font-size:0.9rem;
+  }
+  .ip-box button{border:none; background:var(--t); color:#1a0f08; padding:0 16px; font-weight:600; cursor:pointer; font-size:0.85rem;}
+
+  section{padding:70px 0;}
+  .section-head{display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:36px; gap:20px; flex-wrap:wrap;}
+  .section-head h2{font-size:2.1rem;}
+  .section-head p{color:var(--muted); max-width:46ch; font-size:0.95rem;}
+
+  /* FEATURES */
+  .grid3{display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:var(--border); border:1px solid var(--border); border-radius:4px; overflow:hidden;}
+  .feat{background:var(--panel); padding:26px;}
+  .feat .n{font-family:'JetBrains Mono',monospace; color:var(--t); font-size:0.8rem; margin-bottom:12px; display:block;}
+  .feat h3{font-size:1.15rem; margin-bottom:8px;}
+  .feat p{color:var(--muted); font-size:0.9rem;}
+
+  /* RULES */
+  .rules{border:1px solid var(--border); border-radius:4px; overflow:hidden;}
+  .rule{display:flex; gap:20px; padding:18px 24px; border-bottom:1px solid var(--border); background:var(--panel);}
+  .rule:nth-child(even){background:var(--panel-2);}
+  .rule:last-child{border-bottom:none;}
+  .rule .code{font-family:'JetBrains Mono',monospace; color:var(--ct); font-size:0.85rem; flex-shrink:0; width:60px;}
+  .rule .body h4{font-size:1rem; margin-bottom:4px;}
+  .rule .body p{color:var(--muted); font-size:0.88rem;}
+  .rule .pen{margin-left:auto; flex-shrink:0; font-family:'JetBrains Mono',monospace; font-size:0.78rem; color:var(--danger); align-self:center; white-space:nowrap;}
+
+  /* ADMIN */
+  .admin-shell{border:1px solid var(--border); border-radius:4px; background:var(--panel); overflow:hidden;}
+  .admin-topbar{
+    display:flex; justify-content:space-between; align-items:center;
+    padding:14px 22px; border-bottom:1px solid var(--border); background:var(--panel-2);
+  }
+  .admin-topbar .title{font-family:'JetBrains Mono',monospace; font-size:0.85rem; color:var(--muted); display:flex; align-items:center; gap:10px;}
+  .dots{display:flex; gap:6px;}
+  .dots span{width:9px; height:9px; border-radius:50%; background:var(--border);}
+  .status-chip{font-family:'JetBrains Mono',monospace; font-size:0.75rem; padding:4px 10px; border-radius:20px; border:1px solid var(--border); color:var(--muted);}
+  .status-chip.live{border-color:var(--ok); color:var(--ok);}
+  .status-chip.demo{border-color:var(--t-dim); color:var(--t);}
+
+  .login-panel{padding:60px 22px; text-align:center;}
+  .login-panel .mono{color:var(--muted); font-size:0.85rem; margin-bottom:18px; display:block;}
+  .login-panel form{display:flex; gap:10px; max-width:320px; margin:0 auto; justify-content:center;}
+  .login-panel input{
+    flex:1; background:var(--panel-2); border:1px solid var(--border); color:var(--text);
+    padding:11px 14px; border-radius:3px; font-family:'JetBrains Mono',monospace;
+  }
+  .login-panel input:focus{outline:none; border-color:var(--t-dim);}
+  .err-msg{color:var(--danger); font-size:0.82rem; margin-top:12px; font-family:'JetBrains Mono',monospace; min-height:16px;}
+
+  .admin-body{display:none; padding:24px;}
+  .admin-body.active{display:block;}
+  .tabs{display:flex; gap:4px; margin-bottom:22px; border-bottom:1px solid var(--border);}
+  .tab{padding:10px 18px; font-size:0.9rem; color:var(--muted); cursor:pointer; border-bottom:2px solid transparent; font-weight:600;}
+  .tab.active{color:var(--text); border-color:var(--t);}
+
+  .action-panel{display:none;}
+  .action-panel.active{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
+  .field{display:flex; flex-direction:column; gap:6px;}
+  .field label{font-size:0.78rem; color:var(--muted); font-family:'JetBrains Mono',monospace;}
+  .field input, .field select, .field textarea{
+    background:var(--panel-2); border:1px solid var(--border); color:var(--text);
+    padding:10px 12px; border-radius:3px; font-size:0.9rem; font-family:'Inter',sans-serif;
+  }
+  .field input:focus, .field select:focus, .field textarea:focus{outline:none; border-color:var(--ct-dim);}
+  .field.full{grid-column:1/-1;}
+  .action-panel .submit-row{grid-column:1/-1; display:flex; justify-content:flex-end; gap:10px; margin-top:4px;}
+
+  .log-head{display:flex; justify-content:space-between; align-items:center; margin:30px 0 12px;}
+  .log-head h3{font-size:0.95rem; color:var(--muted); font-weight:600;}
+  table{width:100%; border-collapse:collapse; font-size:0.86rem;}
+  thead th{
+    text-align:left; padding:9px 10px; color:var(--muted); font-weight:600;
+    border-bottom:1px solid var(--border); font-family:'JetBrains Mono',monospace; font-size:0.75rem; text-transform:none;
+  }
+  tbody td{padding:11px 10px; border-bottom:1px solid var(--border); vertical-align:middle;}
+  tbody tr:hover{background:var(--panel-2);}
+  .badge{font-family:'JetBrains Mono',monospace; font-size:0.72rem; padding:3px 8px; border-radius:3px; display:inline-block;}
+  .badge.ban{background:rgba(179,67,47,0.15); color:var(--danger); border:1px solid var(--t-dim);}
+  .badge.mute{background:rgba(78,123,163,0.15); color:var(--ct); border:1px solid var(--ct-dim);}
+  .empty-row td{color:var(--muted); text-align:center; padding:30px 10px; font-family:'JetBrains Mono',monospace; font-size:0.82rem;}
+  .row-btn{background:transparent; border:1px solid var(--border); color:var(--muted); padding:5px 10px; border-radius:3px; cursor:pointer; font-size:0.78rem;}
+  .row-btn:hover{border-color:var(--ok); color:var(--ok);}
+
+  .setup-note{
+    margin-top:26px; padding:16px 18px; border:1px dashed var(--border); border-radius:4px;
+    color:var(--muted); font-size:0.82rem; background:var(--panel-2);
+  }
+  .setup-note b{color:var(--text);}
+
+  footer{border-top:1px solid var(--border); padding:32px 0; margin-top:40px;}
+  footer .wrap{display:flex; justify-content:space-between; align-items:center; color:var(--muted); font-size:0.85rem; flex-wrap:wrap; gap:12px;}
+
+  @media(max-width:860px){
+    .hero{grid-template-columns:1fr; padding-top:50px;}
+    h1{font-size:2.5rem;}
+    .grid3{grid-template-columns:1fr;}
+    .action-panel.active{grid-template-columns:1fr;}
+    .navlinks{display:none;}
+    .rule{flex-wrap:wrap;}
+    .rule .pen{margin-left:0;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <nav>
+      <div class="logo display"><span class="dot"></span>ANORIX</div>
+      <div class="navlinks">
+        <a href="#server">Сервер</a>
+        <a href="#rules">Правила</a>
+        <a href="#admin">Админ-панель</a>
+      </div>
+      <a href="#server" class="btn btn-t btn-sm">Подключиться</a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+  <section class="hero" id="server">
+    <div>
+      <div class="tag"><span class="pulse"></span>SERVER ONLINE</div>
+      <h1 class="display">ANORIX<span class="sub">Counter-Strike 2 community server</span></h1>
+      <p class="lead">Прятки на мираже. Террорист Ишит Спецназы Прячутся
+      <div class="hero-actions">
+        <a href="steam://connect/connect 45.95.31.64:27215" class="btn btn-t">Зайти на сервер</a>
+        <a href="#rules" class="btn btn-outline">Читать правила</a>
+      </div>
+    </div>
+
+    <div class="server-card">
+      <div class="row"><span class="k">Статус</span><span class="v" style="color:var(--ok)">● online</span></div>
+      <div class="row"><span class="k">Игроков</span><span class="v big" id="playersNow">0/32</span></div>
+      <div class="row"><span class="k">Карта</span><span class="v">Mirage Hide and Seek</span></div>
+      <div class="row"><span class="k">Режим</span><span class="v">Public</span></div>
+      <div class="row"><span class="k">Тикрейт</span><span class="v">128</span></div>
+      <div class="ip-box">
+        <input id="ipInput" class="mono" value="connect 45.95.31.64:27215" readonly>
+        <button onclick="copyIP()" id="copyBtn">Копировать</button>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div class="wrap">
+  <section id="about">
+    <div class="section-head">
+      <h2 class="display">Что здесь есть</h2>
+      <p>Сервер держится на честной модерации: каждое действие админа — с причиной и сроком, видимым в этой же панели.</p>
+    </div>
+    <div class="grid3">
+      <div class="feat">
+        <span class="n mono">01</span>
+        <h3>Античит и логи</h3>
+        <p>Каждый матч пишется в демо, подозрительные раунды разбирает админ-состав вручную.</p>
+      </div>
+      <div class="feat">
+        <span class="n mono">02</span>
+        <h3>Прозрачная модерация</h3>
+        <p>Баны, кики и муты выдаются из этой панели и видны в публичном логе ниже.</p>
+      </div>
+      <div class="feat">
+        <span class="n mono">03</span>
+        <h3>Апелляции</h3>
+        <p>Если бан кажется несправедливым — пишите в Steam-группу, разбор занимает до 24 часов.</p>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div class="wrap">
+  <section id="rules">
+    <div class="section-head">
+      <h2 class="display">Правила сервера</h2>
+      <p>Нарушения фиксируются админ-командой через панель ниже, санкции — по нарастающей.</p>
+    </div>
+    <div class="rules">
+      <div class="rule">
+        <span class="code">R-01</span>
+        <div class="body"><h4>Читы и стороннее ПО</h4><p>Любой софт, дающий преимущество — aimbot, wallhack, спиннботы.</p></div>
+        <span class="pen">ban · permanent</span>
+      </div>
+      <div class="rule">
+        <span class="code">R-02</span>
+        <div class="body"><h4>Тимкилл и тимдамаг</h4><p>Умышленный урон или убийство союзников вне дружественного огня по правилам режима.</p></div>
+        <span class="pen">kick → ban 1440m</span>
+      </div>
+      <div class="rule">
+        <span class="code">R-03</span>
+        <div class="body"><h4>Оскорбления и токсичность</h4><p>Расизм, угрозы, разжигание — в чате и голосе.</p></div>
+        <span class="pen">mute 180m</span>
+      </div>
+      <div class="rule">
+        <span class="code">R-04</span>
+        <div class="body"><h4>Реклама и спам</h4><p>Сторонние серверы, ссылки, флуд в чате.</p></div>
+        <span class="pen">mute 60m</span>
+      </div>
+      <div class="rule">
+        <span class="code">R-05</span>
+        <div class="body"><h4>Гриферство</h4><p>Блокировка тиммейтов, слив раунда, умышленный саботаж.</p></div>
+        <span class="pen">kick</span>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div class="wrap">
+  <section id="admin">
+    <div class="section-head">
+      <h2 class="display">Админ-панель</h2>
+      <p>Управление игроками сервера: бан, кик, мут — с записью в общий журнал.</p>
+    </div>
+
+    <div class="admin-shell">
+      <div class="admin-topbar">
+        <div class="title"><div class="dots"><span></span><span></span><span></span></div>anorix.ru / admin console</div>
+        <span class="status-chip demo" id="modeChip">DEMO MODE</span>
+      </div>
+
+      <div class="login-panel" id="loginPanel">
+        <span class="mono">введите пароль администратора</span>
+        <form id="loginForm">
+          <input type="password" id="pwInput" placeholder="пароль" autocomplete="off">
+          <button type="submit" class="btn btn-ct">Войти</button>
+        </form>
+        <div class="err-msg" id="loginErr"></div>
+      </div>
+
+      <div class="admin-body" id="adminBody">
+        <div class="tabs">
+          <div class="tab active" data-tab="ban">Бан</div>
+          <div class="tab" data-tab="mute">Мут</div>
+          <div class="tab" data-tab="kick">Кик</div>
+        </div>
+
+        <div class="action-panel active" id="panel-ban">
+          <div class="field"><label>НИК ИГРОКА</label><input id="banNick" placeholder="Player_777"></div>
+          <div class="field"><label>STEAMID / STEAMID64</label><input id="banSteam" placeholder="STEAM_1:0:XXXXXXX"></div>
+          <div class="field"><label>ДЛИТЕЛЬНОСТЬ</label>
+            <select id="banDuration">
+              <option value="60">60 минут</option>
+              <option value="1440">1 день</option>
+              <option value="10080">7 дней</option>
+              <option value="43200">30 дней</option>
+              <option value="0">навсегда</option>
+            </select>
+          </div>
+          <div class="field"><label>ПРАВИЛО</label>
+            <select id="banRule">
+              <option>R-01 · читы</option>
+              <option>R-02 · тимкилл</option>
+              <option>другое</option>
+            </select>
+          </div>
+          <div class="field full"><label>ПРИЧИНА</label><textarea id="banReason" rows="2" placeholder="Комментарий для лога"></textarea></div>
+          <div class="submit-row"><button class="btn btn-danger" onclick="submitAction('ban')">Выдать бан</button></div>
+        </div>
+
+        <div class="action-panel" id="panel-mute">
+          <div class="field"><label>НИК ИГРОКА</label><input id="muteNick" placeholder="Player_777"></div>
+          <div class="field"><label>STEAMID / STEAMID64</label><input id="muteSteam" placeholder="STEAM_1:0:XXXXXXX"></div>
+          <div class="field"><label>ДЛИТЕЛЬНОСТЬ</label>
+            <select id="muteDuration">
+              <option value="15">15 минут</option>
+              <option value="60">60 минут</option>
+              <option value="180">3 часа</option>
+              <option value="1440">1 день</option>
+            </select>
+          </div>
+          <div class="field"><label>ТИП</label>
+            <select id="muteType"><option value="voice">голос</option><option value="text">текстовый чат</option><option value="both">голос + текст</option></select>
+          </div>
+          <div class="field full"><label>ПРИЧИНА</label><textarea id="muteReason" rows="2" placeholder="Комментарий для лога"></textarea></div>
+          <div class="submit-row"><button class="btn btn-ct" onclick="submitAction('mute')">Выдать мут</button></div>
+        </div>
+
+        <div class="action-panel" id="panel-kick">
+          <div class="field full"><label>НИК ИЛИ USERID</label><input id="kickNick" placeholder="Player_777"></div>
+          <div class="field full"><label>ПРИЧИНА</label><textarea id="kickReason" rows="2" placeholder="Комментарий для лога"></textarea></div>
+          <div class="submit-row"><button class="btn btn-outline" onclick="submitAction('kick')">Кикнуть</button></div>
+        </div>
+
+        <div class="log-head">
+          <h3>ЖУРНАЛ САНКЦИЙ</h3>
+          <button class="row-btn" onclick="refreshLog()">Обновить</button>
+        </div>
+        <table>
+          <thead><tr><th>Тип</th><th>Игрок</th><th>SteamID</th><th>Причина</th><th>Срок</th><th>Когда</th><th></th></tr></thead>
+          <tbody id="logBody"><tr class="empty-row"><td colspan="7">Журнал пуст</td></tr></tbody>
+        </table>
+
+        <div class="setup-note">
+          <b>Как подключить к реальному серверу:</b> эта панель хранит журнал и готова слать команды в игру, но браузер не умеет напрямую открывать RCON-соединение — это ограничение самого браузера, а не сайта. Вместе с этой страницей идёт файл <b>rcon.php</b> — разместите его на вашем хостинге anorix.ru рядом с сайтом, впишите туда IP:порт и RCON-пароль вашего CS2-сервера, и панель начнёт реально выполнять kick/ban/mute на сервере. Пока rcon.php не настроен, панель работает в DEMO MODE — действия только пишутся в журнал.
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<footer>
+  <div class="wrap">
+    <span class="mono">anorix.ru</span>
+    <span>© 2026 ANORIX · CS2 community server</span>
+  </div>
+</footer>
+
+<script>
+  // ---------- password gate (client-side only — replace before real use) ----------
+  const ADMIN_PASSWORD = "snaplik"; // TODO: смените пароль
+  const RCON_ENDPOINT = "rcon.php"; // подключите бэкенд для реальных действий
+
+  document.getElementById('loginForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    const val = document.getElementById('pwInput').value;
+    if(val === ADMIN_PASSWORD){
+      document.getElementById('loginPanel').style.display = 'none';
+      document.getElementById('adminBody').classList.add('active');
+      refreshLog();
+      checkBackend();
+    } else {
+      document.getElementById('loginErr').textContent = 'Неверный пароль';
+    }
+  });
+
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+      document.querySelectorAll('.action-panel').forEach(p=>p.classList.remove('active'));
+      tab.classList.add('active');
+      document.getElementById('panel-'+tab.dataset.tab).classList.add('active');
+    });
+  });
+
+  function copyIP(){
+    const inp = document.getElementById('ipInput');
+    inp.select();
+    navigator.clipboard?.writeText(inp.value);
+    const btn = document.getElementById('copyBtn');
+    const old = btn.textContent;
+    btn.textContent = 'Скопировано';
+    setTimeout(()=>btn.textContent = old, 1400);
+  }
+
+  // ---------- storage (falls back to memory if window.storage is unavailable) ----------
+  let memoryLog = [];
+  async function loadLog(){
+    try{
+      const res = await window.storage.get('sanction-log', true);
+      return res ? JSON.parse(res.value) : [];
+    }catch(e){ return memoryLog; }
+  }
+  async function saveLog(list){
+    memoryLog = list;
+    try{ await window.storage.set('sanction-log', JSON.stringify(list), true); }catch(e){}
+  }
+
+  async function checkBackend(){
+    const chip = document.getElementById('modeChip');
+    try{
+      const r = await fetch(RCON_ENDPOINT, {method:'GET'});
+      if(r.ok){
+        chip.textContent = 'LIVE — подключено к серверу';
+        chip.classList.remove('demo'); chip.classList.add('live');
+      }
+    }catch(e){ /* остаёмся в demo mode */ }
+  }
+
+  async function submitAction(type){
+    let entry = { type, when: new Date().toLocaleString('ru-RU') };
+    if(type === 'ban'){
+      entry.nick = val('banNick'); entry.steam = val('banSteam');
+      entry.duration = document.getElementById('banDuration');
+      entry.durationLabel = entry.duration.options[entry.duration.selectedIndex].text;
+      entry.reason = val('banReason') || document.getElementById('banRule').value;
+    } else if(type === 'mute'){
+      entry.nick = val('muteNick'); entry.steam = val('muteSteam');
+      entry.duration = document.getElementById('muteDuration');
+      entry.durationLabel = entry.duration.options[entry.duration.selectedIndex].text + ' · ' + document.getElementById('muteType').value;
+      entry.reason = val('muteReason');
+    } else {
+      entry.nick = val('kickNick'); entry.steam = '—';
+      entry.durationLabel = '—';
+      entry.reason = val('kickReason');
+    }
+    if(!entry.nick){ alert('Укажите ник или ID игрока'); return; }
+
+    // try to hit the real backend if present
+    try{
+      await fetch(RCON_ENDPOINT, {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({action:type, nick:entry.nick, steam:entry.steam, reason:entry.reason, duration: entry.duration ? entry.duration.value : null})
+      });
+    }catch(e){ /* демо-режим — просто пишем в журнал */ }
+
+    const log = await loadLog();
+    log.unshift(entry);
+    await saveLog(log);
+    renderLog(log);
+    clearForm(type);
+  }
+
+  function val(id){ return document.getElementById(id).value.trim(); }
+  function clearForm(type){
+    if(type==='ban'){ banNick.value=''; banSteam.value=''; banReason.value=''; }
+    if(type==='mute'){ muteNick.value=''; muteSteam.value=''; muteReason.value=''; }
+    if(type==='kick'){ kickNick.value=''; kickReason.value=''; }
+  }
+
+  async function refreshLog(){
+    const log = await loadLog();
+    renderLog(log);
+  }
+
+  function renderLog(log){
+    const body = document.getElementById('logBody');
+    if(!log.length){ body.innerHTML = '<tr class="empty-row"><td colspan="7">Журнал пуст</td></tr>'; return; }
+    body.innerHTML = log.map((e,i) => `
+      <tr>
+        <td><span class="badge ${e.type==='ban'?'ban':e.type==='mute'?'mute':''}">${e.type}</span></td>
+        <td>${escapeHtml(e.nick)}</td>
+        <td class="mono" style="color:var(--muted)">${escapeHtml(e.steam||'—')}</td>
+        <td style="color:var(--muted)">${escapeHtml(e.reason||'—')}</td>
+        <td class="mono">${escapeHtml(e.durationLabel||'—')}</td>
+        <td style="color:var(--muted); font-size:0.8rem">${e.when}</td>
+        <td><button class="row-btn" onclick="removeEntry(${i})">снять</button></td>
+      </tr>`).join('');
+  }
+
+  async function removeEntry(i){
+    const log = await loadLog();
+    log.splice(i,1);
+    await saveLog(log);
+    renderLog(log);
+  }
+
+  function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+</script>
+
+</body>
+</html>
